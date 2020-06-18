@@ -9,6 +9,10 @@ This is very early work!  Some issues include:
 needs to te GraphQL pattern. 
 * The docker image uses Google Cloud Run Distro..  but not sure how will it will deploy there yet, 
 need to test that. 
+* The wild card and multi word searching works but I need to improve the pattern and error handling 
+and document the approach that maps the GraphQL query structure to SPARQL.
+* Need to establish other search patterns than full text index.  For example, exact key 
+searches for DOIs or IGSNs.  
 
 ## About
 This is a GraphQL server that connects into a defined RDF triple store.  
@@ -20,6 +24,36 @@ This is a simple code gen build based on the 99 Designs gqlgen package
 schema.org types as interface guidance.  My desire is to use SHACL shape
 graphs for this.  This has been done by TopQuadrant but is obviously 
 closed source.  Shape to interface should be easy if I get time.  
+
+## Running
+Just the basics:
+
+```bash
+go run server.go 
+```
+
+Then visit GraphQL playground instance at: http://localhost:8080/
+
+Try a GraphQL query like:
+
+```graphql
+query {
+  dos(q:"alken*")
+  {
+    name
+    subject
+    type
+    addtype
+    score
+    relto
+    url
+    description
+  }
+}
+
+```
+
+The search is case insensitive but needs the wild card character for prefix match patterns.
 
 ## Mercantile ?
 I'm not fully convinced that GraphQL is the best way and it's obviously 

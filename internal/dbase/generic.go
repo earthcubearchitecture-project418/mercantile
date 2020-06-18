@@ -59,7 +59,7 @@ OFFSET 0
 # and relto from the following
 # may need SELECT DISTINCT * if we use template controlled optional elements
 # NOTE hack that locks this to type dataset (then stupidly does an OPTIONAL for that  )  ;)
- #tag: geodex
+#tag: geodex
 prefix schema: <http://schema.org/>
 prefix bds: <http://www.bigdata.com/rdf/search#>
 SELECT DISTINCT ?subj  ?p ?score  ?type  ?name ?addtype ?url  ?description
