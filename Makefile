@@ -15,3 +15,4 @@ publish:
 		docker push fils/mercantile:$(DOCKERVER)
 		docker push fils/mercantile:latest
 
+buildpub: linux docker dockerlatest publish
