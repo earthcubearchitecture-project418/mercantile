@@ -1,0 +1,6 @@
+---
+server:
+  address: 0.0.0.0 # not used at this point, not sure it will bes
+  port: 8080
+  endpoint: http://geodex.org/blazegraph/namespace/pv418PlusProv/sparql
+  #endpoint: http://opencoredata.org/blazegraph/namespace/jrso/sparql

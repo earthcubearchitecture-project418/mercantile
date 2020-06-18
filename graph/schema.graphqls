@@ -1,0 +1,27 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type DO {
+  subject: String!
+  score: String!
+  type: String!
+  name: String!
+  relto:  String!
+  addtype: String!
+  url: String!
+  description: String!
+}
+
+type Query {
+  dos(q: String):  [DO!]!
+}
+
+input NewDO {
+  text: String!
+  userId: String!
+}
+
+type Mutation {
+  createDo(input: NewDO!): DO!
+}

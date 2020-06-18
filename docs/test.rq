@@ -1,0 +1,37 @@
+prefix schema: <http://schema.org/> 
+prefix bds: <http://www.bigdata.com/rdf/search#> 
+SELECT DISTINCT ?subj ?p ?score ?type ?name ?addtype ?url ?description 
+WHERE { 
+?lit bds:search "thermal" .  
+?lit bds:matchAllTerms "false" .  
+?lit bds:relevance ?score . 
+?subj ?p ?lit . 
+BIND (?subj as ?s) 
+?s a schema:Dataset . 
+OPTIONAL {?s rdf:type ?type .} 
+OPTIONAL {?s schema:additionalType ?addtype . } 
+OPTIONAL {?s schema:name ?name .} 
+OPTIONAL {?s schema:url ?url . } 
+OPTIONAL {?s schema:description ?description . } 
+} 
+ORDER BY DESC(?score) ?subj
+OFFSET 0 
+
+prefix schema: <http://schema.org/>
+prefix bds: <http://www.bigdata.com/rdf/search#>
+SELECT DISTINCT ?subj  ?p ?score  ?type  ?name ?addtype ?url  ?description
+where {  
+     ?lit bds:search "thermal" .
+    ?lit bds:matchAllTerms "false" .
+    ?lit bds:relevance ?score .
+   ?subj ?p ?lit .
+   BIND (?subj as ?s)
+   ?s a schema:Dataset .
+   OPTIONAL {?s rdf:type ?type .}
+   OPTIONAL {?s schema:additionalType ?addtype . }
+   OPTIONAL {?s schema:name ?name .}
+    OPTIONAL {?s schema:url ?url . }
+   OPTIONAL {?s schema:description ?description . }
+ }
+ORDER BY DESC(?score) ?subj
+OFFSET 0
