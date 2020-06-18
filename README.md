@@ -7,6 +7,8 @@ This is very early work!  Some issues include:
 * The query offset is not wired in...  just need to do that. 
 * The query pattern is not resolved...  need to work up how to map interfaces query 
 needs to te GraphQL pattern. 
+* The docker image uses Google Cloud Run Distro..  but not sure how will it will deploy there yet, 
+need to test that. 
 
 ## About
 This is a GraphQL server that connects into a defined RDF triple store.  
