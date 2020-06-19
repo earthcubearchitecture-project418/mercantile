@@ -55,7 +55,7 @@ ORDER BY DESC(?score)
 OFFSET 0
 
 
-# removed      OPTIONAL {?s schema:additionalType ?addtype . }  
+# removed      OPTIONAL {?s schema:additionalType ?addtype . }
 # and relto from the following
 # may need SELECT DISTINCT * if we use template controlled optional elements
 # NOTE hack that locks this to type dataset (then stupidly does an OPTIONAL for that  )  ;)
@@ -84,6 +84,7 @@ OFFSET 0
 
 `
 
+// QModel holds the query and all word matching request boolean
 type QModel struct {
 	Q        string // query string
 	MatchAll bool   // do we match all terms
@@ -196,7 +197,7 @@ func DescriptionCall(q string) ([]*model.Do, error) {
 // connector function for the local sparql instance
 func getLocalSPARQL(endpoint string) (*sparql.Repo, error) {
 	repo, err := sparql.NewRepo(endpoint,
-		sparql.Timeout(time.Millisecond*15000),
+		sparql.Timeout(time.Millisecond*30000),
 	)
 	if err != nil {
 		log.Printf("getLocalSPARQL %s\n", err)

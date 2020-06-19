@@ -18,8 +18,6 @@ func (r *mutationResolver) CreateDo(ctx context.Context, input model.NewDo) (*mo
 }
 
 func (r *queryResolver) Dos(ctx context.Context, q *string) ([]*model.Do, error) {
-	//panic(fmt.Errorf("not implemented"))
-
 	qs := *q
 	ds, err := dbase.DescriptionCall(qs)
 	if err != nil {
