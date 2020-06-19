@@ -34,6 +34,10 @@ func (r *queryResolver) Dos(ctx context.Context, q *string, url *string) ([]*mod
 	return ds, err
 }
 
+func (r *queryResolver) Dis(ctx context.Context, q *string) ([]*model.Distribution, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
