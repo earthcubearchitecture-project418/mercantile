@@ -44,14 +44,21 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Do struct {
-		Addtype     func(childComplexity int) int
-		Description func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Relto       func(childComplexity int) int
-		Score       func(childComplexity int) int
-		Subject     func(childComplexity int) int
-		Type        func(childComplexity int) int
-		URL         func(childComplexity int) int
+		Addtype      func(childComplexity int) int
+		Description  func(childComplexity int) int
+		Distribution func(childComplexity int) int
+		Name         func(childComplexity int) int
+		Relto        func(childComplexity int) int
+		Score        func(childComplexity int) int
+		Subject      func(childComplexity int) int
+		Type         func(childComplexity int) int
+		URL          func(childComplexity int) int
+	}
+
+	Distribution struct {
+		ContentURL     func(childComplexity int) int
+		EncodingFormat func(childComplexity int) int
+		Type           func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -99,6 +106,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Do.Description(childComplexity), true
 
+	case "DO.distribution":
+		if e.complexity.Do.Distribution == nil {
+			break
+		}
+
+		return e.complexity.Do.Distribution(childComplexity), true
+
 	case "DO.name":
 		if e.complexity.Do.Name == nil {
 			break
@@ -140,6 +154,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Do.URL(childComplexity), true
+
+	case "Distribution.contentUrl":
+		if e.complexity.Distribution.ContentURL == nil {
+			break
+		}
+
+		return e.complexity.Distribution.ContentURL(childComplexity), true
+
+	case "Distribution.encodingFormat":
+		if e.complexity.Distribution.EncodingFormat == nil {
+			break
+		}
+
+		return e.complexity.Distribution.EncodingFormat(childComplexity), true
+
+	case "Distribution.type":
+		if e.complexity.Distribution.Type == nil {
+			break
+		}
+
+		return e.complexity.Distribution.Type(childComplexity), true
 
 	case "Mutation.createDo":
 		if e.complexity.Mutation.CreateDo == nil {
@@ -242,6 +277,13 @@ type DO {
   addtype: String!
   url: String!
   description: String!
+  distribution: Distribution!
+}
+
+type Distribution {
+    type: String!
+    contentUrl: String!
+    encodingFormat: String!
 }
 
 type Query {
@@ -606,6 +648,142 @@ func (ec *executionContext) _DO_description(ctx context.Context, field graphql.C
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DO_distribution(ctx context.Context, field graphql.CollectedField, obj *model.Do) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "DO",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Distribution, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Distribution)
+	fc.Result = res
+	return ec.marshalNDistribution2ᚖgithubᚗcomᚋfilsᚋocdGraphQLᚋgraphᚋmodelᚐDistribution(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Distribution_type(ctx context.Context, field graphql.CollectedField, obj *model.Distribution) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Distribution",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Distribution_contentUrl(ctx context.Context, field graphql.CollectedField, obj *model.Distribution) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Distribution",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ContentURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Distribution_encodingFormat(ctx context.Context, field graphql.CollectedField, obj *model.Distribution) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Distribution",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EncodingFormat, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1911,6 +2089,48 @@ func (ec *executionContext) _DO(ctx context.Context, sel ast.SelectionSet, obj *
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "distribution":
+			out.Values[i] = ec._DO_distribution(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var distributionImplementors = []string{"Distribution"}
+
+func (ec *executionContext) _Distribution(ctx context.Context, sel ast.SelectionSet, obj *model.Distribution) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, distributionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Distribution")
+		case "type":
+			out.Values[i] = ec._Distribution_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "contentUrl":
+			out.Values[i] = ec._Distribution_contentUrl(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "encodingFormat":
+			out.Values[i] = ec._Distribution_encodingFormat(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2305,6 +2525,20 @@ func (ec *executionContext) marshalNDO2ᚖgithubᚗcomᚋfilsᚋocdGraphQLᚋgra
 		return graphql.Null
 	}
 	return ec._DO(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDistribution2githubᚗcomᚋfilsᚋocdGraphQLᚋgraphᚋmodelᚐDistribution(ctx context.Context, sel ast.SelectionSet, v model.Distribution) graphql.Marshaler {
+	return ec._Distribution(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDistribution2ᚖgithubᚗcomᚋfilsᚋocdGraphQLᚋgraphᚋmodelᚐDistribution(ctx context.Context, sel ast.SelectionSet, v *model.Distribution) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Distribution(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNNewDO2githubᚗcomᚋfilsᚋocdGraphQLᚋgraphᚋmodelᚐNewDo(ctx context.Context, v interface{}) (model.NewDo, error) {

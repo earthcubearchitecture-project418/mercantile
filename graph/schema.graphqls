@@ -11,10 +11,18 @@ type DO {
   addtype: String!
   url: String!
   description: String!
+  distribution: Distribution!
+}
+
+type Distribution {
+    type: String!
+    contentUrl: String!
+    encodingFormat: String!
 }
 
 type Query {
   dos(q: String, url: String):  [DO!]!
+  dis(q: String):  [Distribution!]!
 }
 
 input NewDO {
