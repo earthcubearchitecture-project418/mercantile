@@ -93,7 +93,8 @@ type QModel struct {
 var viperVal string
 
 // DescriptionCall make a SPARQL call
-func DescriptionCall(q string) ([]*model.Do, error) {
+func DescriptionCall(q, u string) ([]*model.Do, error) {
+	// Viper config   # should be passed as a pointer
 	var v1 *viper.Viper
 	v1, err := readConfig(viperVal, nil)
 	if err != nil {
@@ -102,18 +103,20 @@ func DescriptionCall(q string) ([]*model.Do, error) {
 
 	mcfg := v1.GetStringMapString("server")
 	log.Println(mcfg["endpoint"])
-
 	repo, err := getLocalSPARQL(mcfg["endpoint"])
 
-	log.Println(q)
+	// At this point we need to route the request to the queries
+	// that support the request.  This will be based on the
+	// request parameters sent
+	log.Printf("q: %s", q)
+	log.Printf("u: %s", u)
 
 	f := bytes.NewBufferString(queries)
 	bank := sparql.LoadBank(f)
 
 	qm := QModel{Q: q, MatchAll: true}
 
-	// sq, err := bank.Prepare("mainsearch", qm)
-	sq, err := bank.Prepare("geodex", qm)
+	sq, err := bank.Prepare("geodex", qm) // change the SPARQL call used here..   mainsearch is the other one for now
 	if err != nil {
 		log.Printf("%s\n", err)
 	}

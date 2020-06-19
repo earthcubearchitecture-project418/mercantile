@@ -59,7 +59,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Dos func(childComplexity int, q *string) int
+		Dos func(childComplexity int, q *string, url *string) int
 	}
 }
 
@@ -67,7 +67,7 @@ type MutationResolver interface {
 	CreateDo(ctx context.Context, input model.NewDo) (*model.Do, error)
 }
 type QueryResolver interface {
-	Dos(ctx context.Context, q *string) ([]*model.Do, error)
+	Dos(ctx context.Context, q *string, url *string) ([]*model.Do, error)
 }
 
 type executableSchema struct {
@@ -163,7 +163,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Dos(childComplexity, args["q"].(*string)), true
+		return e.complexity.Query.Dos(childComplexity, args["q"].(*string), args["url"].(*string)), true
 
 	}
 	return 0, false
@@ -245,7 +245,7 @@ type DO {
 }
 
 type Query {
-  dos(q: String):  [DO!]!
+  dos(q: String, url: String):  [DO!]!
 }
 
 input NewDO {
@@ -303,6 +303,14 @@ func (ec *executionContext) field_Query_dos_args(ctx context.Context, rawArgs ma
 		}
 	}
 	args["q"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["url"]; ok {
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["url"] = arg1
 	return args, nil
 }
 
@@ -679,7 +687,7 @@ func (ec *executionContext) _Query_dos(ctx context.Context, field graphql.Collec
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Dos(rctx, args["q"].(*string))
+		return ec.resolvers.Query().Dos(rctx, args["q"].(*string), args["url"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

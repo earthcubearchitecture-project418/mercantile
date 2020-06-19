@@ -17,9 +17,16 @@ func (r *mutationResolver) CreateDo(ctx context.Context, input model.NewDo) (*mo
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Dos(ctx context.Context, q *string) ([]*model.Do, error) {
+func (r *queryResolver) Dos(ctx context.Context, q *string, url *string) ([]*model.Do, error) {
 	qs := *q
-	ds, err := dbase.DescriptionCall(qs)
+
+	if url == nil {
+		temp := ""  // *string cannot be initialized
+		url = &temp // in one statement
+	}
+	us := *url // safe to use url now if it was nil
+
+	ds, err := dbase.DescriptionCall(qs, us)
 	if err != nil {
 		log.Println(err)
 	}
