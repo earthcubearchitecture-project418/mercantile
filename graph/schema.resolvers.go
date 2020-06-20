@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/fils/ocdGraphQL/graph/generated"
 	"github.com/fils/ocdGraphQL/graph/model"
 	"github.com/fils/ocdGraphQL/internal/dbase"
@@ -19,6 +20,9 @@ func (r *mutationResolver) CreateDo(ctx context.Context, input model.NewDo) (*mo
 
 func (r *queryResolver) Dos(ctx context.Context, q *string, url *string) ([]*model.Do, error) {
 	qs := *q
+
+	preloads := GetPreloads(ctx)
+	log.Println(preloads) // list of requested items.  Pass to dbase call to limit return
 
 	if url == nil {
 		temp := ""  // *string cannot be initialized
@@ -36,6 +40,32 @@ func (r *queryResolver) Dos(ctx context.Context, q *string, url *string) ([]*mod
 
 func (r *queryResolver) Dis(ctx context.Context, q *string) ([]*model.Distribution, error) {
 	panic(fmt.Errorf("not implemented"))
+}
+
+func GetPreloads(ctx context.Context) []string {
+	return GetNestedPreloads(
+		graphql.GetRequestContext(ctx),
+		graphql.CollectFieldsCtx(ctx, nil),
+		"",
+	)
+}
+
+func GetNestedPreloads(ctx *graphql.RequestContext, fields []graphql.CollectedField, prefix string) (preloads []string) {
+	for _, column := range fields {
+		prefixColumn := GetPreloadString(prefix, column.Name)
+		preloads = append(preloads, prefixColumn)
+		preloads = append(preloads, GetNestedPreloads(ctx, graphql.CollectFields(ctx, column.SelectionSet, nil), prefixColumn)...)
+		preloads = append(preloads, GetNestedPreloads(ctx, graphql.CollectFields(ctx, column.Selections, nil), prefixColumn)...)
+
+	}
+	return
+}
+
+func GetPreloadString(prefix, name string) string {
+	if len(prefix) > 0 {
+		return prefix + "." + name
+	}
+	return name
 }
 
 // Mutation returns generated.MutationResolver implementation.
