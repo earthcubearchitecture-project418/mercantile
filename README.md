@@ -58,6 +58,18 @@ query {
 
 The search is case insensitive but needs the wild card character for prefix match patterns.
 
+
+## Generating
+
+![generating](./docs/Mercantile.png "Generating Pipeline")
+
+I'll work this up some more.  The basic process is that changes to the schema.graphqls 
+file can be propagated through the code via ```go generate ../.``` .  
+
+The preloads.go file lets us pass through the requested fields for use in 
+query optimization.   The resolver.go code then binds into our code in the 
+internal/dbase directory to make the SPARQL calls and resolve the request.  
+
 ## Mercantile
 
 I'm not fully convinced that GraphQL is the best way and it's obviously
