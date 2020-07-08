@@ -62,7 +62,7 @@ OFFSET 0
 #tag: geodex
 prefix schema: <http://schema.org/>
 prefix bds: <http://www.bigdata.com/rdf/search#>
-SELECT DISTINCT ?subj  ?p ?score  ?type  ?name ?addtype ?url  ?description
+SELECT DISTINCT ?subj ?p ?score  ?type  ?name ?addtype ?url  ?description
  WHERE {
    ?lit bds:search "{{.Q}}" .
    {{ if .MatchAll}}
@@ -72,15 +72,16 @@ SELECT DISTINCT ?subj  ?p ?score  ?type  ?name ?addtype ?url  ?description
    ?subj ?p ?lit .
    BIND (?subj as ?s)
    ?s a schema:Dataset .
+   OPTIONAL {?s schema:distribution ?dis .
+	?dis schema:url ?url . }
    OPTIONAL {?s rdf:type ?type .}
    OPTIONAL {?s schema:additionalType ?addtype . }
    OPTIONAL {?s schema:name ?name .}
-    OPTIONAL {?s schema:url ?url . }
    OPTIONAL {?s schema:description ?description . }
  }
 ORDER BY DESC(?score) ?subj
-OFFSET 0
-
+OFFSET {{.Offset}}
+LIMIT {{.First}}
 
 `
 
@@ -88,12 +89,14 @@ OFFSET 0
 type QModel struct {
 	Q        string // query string
 	MatchAll bool   // do we match all terms
+	First    int    // number to get
+	Offset   int    // where to start "geting" from in the list
 }
 
 var viperVal string
 
 // DescriptionCall make a SPARQL call
-func DescriptionCall(q, u string) ([]*model.Do, error) {
+func DescriptionCall(q, u string, first, offset int) ([]*model.Do, error) {
 	// Viper config   # should be passed as a pointer
 	var v1 *viper.Viper
 	v1, err := readConfig(viperVal, nil)
@@ -114,7 +117,7 @@ func DescriptionCall(q, u string) ([]*model.Do, error) {
 	f := bytes.NewBufferString(queries)
 	bank := sparql.LoadBank(f)
 
-	qm := QModel{Q: q, MatchAll: true}
+	qm := QModel{Q: q, MatchAll: true, First: first, Offset: offset}
 
 	sq, err := bank.Prepare("geodex", qm) // change the SPARQL call used here..   mainsearch is the other one for now
 	if err != nil {

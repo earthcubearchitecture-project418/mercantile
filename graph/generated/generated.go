@@ -67,7 +67,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Dis func(childComplexity int, q *string) int
-		Dos func(childComplexity int, q *string, url *string) int
+		Dos func(childComplexity int, q *string, url *string, first *int, offset *int) int
 	}
 }
 
@@ -75,7 +75,7 @@ type MutationResolver interface {
 	CreateDo(ctx context.Context, input model.NewDo) (*model.Do, error)
 }
 type QueryResolver interface {
-	Dos(ctx context.Context, q *string, url *string) ([]*model.Do, error)
+	Dos(ctx context.Context, q *string, url *string, first *int, offset *int) ([]*model.Do, error)
 	Dis(ctx context.Context, q *string) ([]*model.Distribution, error)
 }
 
@@ -212,7 +212,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Dos(childComplexity, args["q"].(*string), args["url"].(*string)), true
+		return e.complexity.Query.Dos(childComplexity, args["q"].(*string), args["url"].(*string), args["first"].(*int), args["offset"].(*int)), true
 
 	}
 	return 0, false
@@ -301,7 +301,7 @@ type Distribution {
 }
 
 type Query {
-  dos(q: String, url: String):  [DO!]!
+  dos(q: String, url: String, first: Int, offset: Int):  [DO!]!
   dis(q: String):  [Distribution!]!
 }
 
@@ -382,6 +382,22 @@ func (ec *executionContext) field_Query_dos_args(ctx context.Context, rawArgs ma
 		}
 	}
 	args["url"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg3
 	return args, nil
 }
 
@@ -894,7 +910,7 @@ func (ec *executionContext) _Query_dos(ctx context.Context, field graphql.Collec
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Dos(rctx, args["q"].(*string), args["url"].(*string))
+		return ec.resolvers.Query().Dos(rctx, args["q"].(*string), args["url"].(*string), args["first"].(*int), args["offset"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2927,6 +2943,29 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
+}
+
+func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
+	return graphql.UnmarshalInt(v)
+}
+
+func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	return graphql.MarshalInt(v)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOInt2int(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec.marshalOInt2int(ctx, sel, *v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

@@ -21,7 +21,7 @@ type Distribution {
 }
 
 type Query {
-  dos(q: String, url: String):  [DO!]!
+  dos(q: String, url: String, first: Int, offset: Int):  [DO!]!
   dis(q: String):  [Distribution!]!
 }
 

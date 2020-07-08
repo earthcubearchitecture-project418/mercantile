@@ -17,7 +17,7 @@ func (r *mutationResolver) CreateDo(ctx context.Context, input model.NewDo) (*mo
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Dos(ctx context.Context, q *string, url *string) ([]*model.Do, error) {
+func (r *queryResolver) Dos(ctx context.Context, q *string, url *string, first *int, offset *int) ([]*model.Do, error) {
 	qs := *q
 
 	preloads := GetPreloads(ctx)
@@ -29,7 +29,19 @@ func (r *queryResolver) Dos(ctx context.Context, q *string, url *string) ([]*mod
 	}
 	us := *url // safe to use url now if it was nil
 
-	ds, err := dbase.DescriptionCall(qs, us)
+	if first == nil {
+		temp := 20    // int can not be nil, default to 20 returned values..
+		first = &temp // in one statement
+	}
+	f := *first // safe to use url now if it was nil
+
+	if offset == nil {
+		temp := 0      // int can not be nil, start from top of list
+		offset = &temp // in one statement
+	}
+	o := *offset // safe to use url now if it was nil
+
+	ds, err := dbase.DescriptionCall(qs, us, f, o)
 	if err != nil {
 		log.Println(err)
 	}
