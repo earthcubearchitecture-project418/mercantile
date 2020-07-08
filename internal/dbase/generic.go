@@ -83,6 +83,33 @@ ORDER BY DESC(?score) ?subj
 OFFSET {{.Offset}}
 LIMIT {{.First}}
 
+#tag: group
+prefix schema: <http://schema.org/>
+prefix bds: <http://www.bigdata.com/rdf/search#>
+SELECT DISTINCT ?subj ?url ?score ?name ?description
+ WHERE {
+   ?lit bds:search "{{.Q}}" .
+   {{ if .MatchAll}}
+   ?lit bds:matchAllTerms "false" .
+   {{end}}
+   ?lit bds:relevance ?score .
+   ?subj ?p ?lit .
+   ?subj a schema:Dataset .
+   BIND (?subj as ?s)
+   {
+   		SELECT  ?s (MIN(?disurl) as ?url) {
+            ?s a schema:Dataset .
+            ?s schema:distribution ?dis .
+   			?dis schema:url ?disurl .
+   	  	} GROUP BY ?s
+   }
+   ?s schema:name ?name .
+   ?s schema:description ?description .
+ }
+ORDER BY DESC(?score) ?subj
+OFFSET {{.Offset}}
+LIMIT {{.First}}
+
 `
 
 // QModel holds the query and all word matching request boolean
@@ -108,9 +135,7 @@ func DescriptionCall(q, u string, first, offset int) ([]*model.Do, error) {
 	log.Println(mcfg["endpoint"])
 	repo, err := getLocalSPARQL(mcfg["endpoint"])
 
-	// At this point we need to route the request to the queries
-	// that support the request.  This will be based on the
-	// request parameters sent
+	// At this point we need to route the request to the queries that support the request.  This will be based on the request parameters sent
 	log.Printf("q: %s", q)
 	log.Printf("u: %s", u)
 
@@ -119,7 +144,7 @@ func DescriptionCall(q, u string, first, offset int) ([]*model.Do, error) {
 
 	qm := QModel{Q: q, MatchAll: true, First: first, Offset: offset}
 
-	sq, err := bank.Prepare("geodex", qm) // change the SPARQL call used here..   mainsearch is the other one for now
+	sq, err := bank.Prepare("group", qm) // change the SPARQL call used here..   mainsearch is the other one for now
 	if err != nil {
 		log.Printf("%s\n", err)
 	}
@@ -135,40 +160,9 @@ func DescriptionCall(q, u string, first, offset int) ([]*model.Do, error) {
 	// set up our struct
 	ds := []*model.Do{}
 
-	/*
-		bindingsTest2 := res.Bindings() // map[string][]rdf.Term
-		log.Printf("Binding Test %s ", bindingsTest2)
-		log.Println(len(bindingsTest2["description"]))
-
-		// This whole aspect seems verbose... there has to be a better Go way to do this check?
-		if len(bindingsTest2) > 0 {
-			if len(bindingsTest2["description"]) > 0 {
-				for x := range bindingsTest2["description"] {
-					d := &model.Do{}
-					d.Name = bindingsTest2["name"][x].String()
-					d.Description = bindingsTest2["description"][x].String()
-					d.URL = bindingsTest2["url"][x].String()
-					d.Score = bindingsTest2["score"][x].String()
-					ds = append(ds, d)
-				}
-			}
-		}
-	*/
-
 	bindingsTest1 := res.Solutions() // []map[string]red.Term
 
-	// 	log.Println(len(bindingsTest1))
-	//	log.Println(bindingsTest1)
-
 	for x := range bindingsTest1 {
-
-		// TODO resolve this mutli type removal hack with Adam
-		// if val, ok := bindingsTest1[x]["addtype"]; ok {
-		// 	if strings.Contains(val.String(), "https://opencoredata.org/voc/janus/v1/Dataset") {
-		// 		continue
-		// 	}
-		// }
-
 		d := &model.Do{}
 		if val, ok := bindingsTest1[x]["subj"]; ok {
 			d.Subject = val.String()
@@ -196,6 +190,26 @@ func DescriptionCall(q, u string, first, offset int) ([]*model.Do, error) {
 		}
 		ds = append(ds, d)
 	}
+
+	/*
+		bindingsTest2 := res.Bindings() // map[string][]rdf.Term
+		log.Printf("Binding Test %s ", bindingsTest2)
+		log.Println(len(bindingsTest2["description"]))
+
+		// This whole aspect seems verbose... there has to be a better Go way to do this check?
+		if len(bindingsTest2) > 0 {
+			if len(bindingsTest2["description"]) > 0 {
+				for x := range bindingsTest2["description"] {
+					d := &model.Do{}
+					d.Name = bindingsTest2["name"][x].String()
+					d.Description = bindingsTest2["description"][x].String()
+					d.URL = bindingsTest2["url"][x].String()
+					d.Score = bindingsTest2["score"][x].String()
+					ds = append(ds, d)
+				}
+			}
+		}
+	*/
 
 	return ds, err
 }

@@ -1,3 +1,60 @@
+prefix schema: <http://schema.org/>
+prefix bds: <http://www.bigdata.com/rdf/search#>
+SELECT DISTINCT ?subj ?p ?score  ?type  ?name ?addtype ?url  ?description
+ WHERE {
+   ?lit bds:search "{{.Q}}" .
+   {{ if .MatchAll}}
+   ?lit bds:matchAllTerms "false" .
+   {{end}}
+   ?lit bds:relevance ?score .
+   ?subj ?p ?lit .
+   BIND (?subj as ?s)
+   ?s a schema:Dataset .
+   OPTIONAL {?s schema:distribution ?dis .
+	?dis schema:url ?url . }
+   OPTIONAL {?s rdf:type ?type .}
+   OPTIONAL {?s schema:name ?name .}
+   OPTIONAL {?s schema:description ?description . }
+ }
+ORDER BY DESC(?score) ?subj
+OFFSET {{.Offset}}
+LIMIT {{.First}}
+
+Notes:
+addType duplicates results, so don't use that..   So does
+URL for resources with multiple distribution URLs
+
+
+
+
+# a better search in min urlprefix schema: <http://schema.org/>
+prefix schema: <http://schema.org/>
+prefix bds: <http://www.bigdata.com/rdf/search#>
+SELECT DISTINCT ?s ?minurl ?score ?name ?description
+ WHERE {
+   ?lit bds:search "acid" .
+   ?lit bds:matchAllTerms "false" .
+   ?lit bds:relevance ?score .
+   ?subj ?p ?lit .
+   ?subj a schema:Dataset .
+   BIND (?subj as ?s)
+   {
+   		SELECT  ?s (MIN(?url) as ?minurl) {
+             ?s a schema:Dataset .
+             ?s schema:distribution ?dis .
+   			?dis schema:url ?url .
+   	  	} GROUP BY ?s
+   }
+   ?s schema:name ?name .
+   ?s schema:description ?description . 
+ }
+ORDER BY DESC(?score)  ?s
+OFFSET  0
+LIMIT 10
+
+
+
+
 prefix schema: <http://schema.org/> 
 prefix bds: <http://www.bigdata.com/rdf/search#> 
 SELECT DISTINCT ?subj ?p ?score ?type ?name ?addtype ?url ?description 
