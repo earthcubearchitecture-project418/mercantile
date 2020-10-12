@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/fils/ocdGraphQL/graph/model"
+	"github.com/earthcubearchitecture-project418/mercantile/graph/model"
 	"github.com/knakk/sparql"
 	"github.com/spf13/viper"
 )

@@ -1,4 +1,4 @@
-module github.com/fils/ocdGraphQL
+module github.com/earthcubearchitecture-project418/mercantile
 
 go 1.14
 

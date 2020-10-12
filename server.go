@@ -8,8 +8,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/fils/ocdGraphQL/graph"
-	"github.com/fils/ocdGraphQL/graph/generated"
+	"github.com/earthcubearchitecture-project418/mercantile/graph"
+	"github.com/earthcubearchitecture-project418/mercantile/graph/generated"
 	"github.com/spf13/viper"
 )
 

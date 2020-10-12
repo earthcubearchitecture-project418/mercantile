@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/fils/ocdGraphQL/graph/generated"
-	"github.com/fils/ocdGraphQL/graph/model"
-	"github.com/fils/ocdGraphQL/internal/dbase"
+	"github.com/earthcubearchitecture-project418/mercantile/graph/generated"
+	"github.com/earthcubearchitecture-project418/mercantile/graph/model"
+	"github.com/earthcubearchitecture-project418/mercantile/internal/dbase"
 )
 
 func (r *mutationResolver) CreateDo(ctx context.Context, input model.NewDo) (*model.Do, error) {
